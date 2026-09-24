@@ -179,7 +179,7 @@ export async function createBrowserManager(options: {
           PATH: process.env.PATH ?? "/usr/bin:/bin",
           LANG: "C.UTF-8",
         },
-        headless: true,
+        headless: process.env.WORKER_HEADLESS !== "false",
         viewport: { width: 1280, height: 800 },
         proxy: { server: proxy.url, bypass: "<-loopback>" },
         serviceWorkers: "block",

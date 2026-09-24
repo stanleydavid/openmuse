@@ -216,7 +216,7 @@ export class ConversationAgent extends AbstractAgent {
     ];
     const agent = new BuiltInAgent({
       model: chatModel(this.config.model) as BuiltInAgentModel,
-      maxSteps: 6,
+      maxSteps: 10,
       maxRetries: 0,
       tools,
       prompt:
