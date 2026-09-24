@@ -1,11 +1,12 @@
 import "../config.ts";
 import { createHash, randomUUID } from "node:crypto";
 import { EventType, type RunAgentInput } from "@ag-ui/core";
-import { BuiltInAgent, defineTool } from "@copilotkit/runtime/v2";
+import { BuiltInAgent, type BuiltInAgentModel, defineTool } from "@copilotkit/runtime/v2";
 import { z } from "zod";
 import type { AgentTask } from "../../../../packages/domain/src/agent.ts";
 import { emailDraftSchema, eventDraftSchema } from "../../../../packages/domain/src/index.ts";
 import { computerInstructions, computerTools } from "../computer-tools.ts";
+import { chatModel } from "../llm.ts";
 import type { AgentService } from "./service.ts";
 import type { TaskContext } from "./worker.ts";
 
@@ -279,7 +280,7 @@ export async function executeModelTask(
   );
   const memories = await service.db.list<{ text: string; source: string }>(owner, "memories");
   const agent = new BuiltInAgent({
-    model: config.model,
+    model: chatModel(config.model) as BuiltInAgentModel,
     maxSteps: 16,
     maxRetries: 0,
     tools,

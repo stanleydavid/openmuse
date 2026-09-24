@@ -18,7 +18,7 @@
  */
 import "./config.ts";
 import type { AbstractAgent, Message } from "@ag-ui/client";
-import { EventType, compactEvents } from "@ag-ui/client";
+import { compactEvents, EventType } from "@ag-ui/client";
 import type { BaseEvent, RunAgentInput } from "@ag-ui/core";
 import {
   AgentRunner,
@@ -194,9 +194,7 @@ export class PersistentAgentRunner extends AgentRunner {
         const ownsThread = store.currentRunId === request.input.runId;
         if (ownsThread && (!isError || preFinalizeEventCount > 0)) {
           const compactedEvents = compactEvents(currentRunEvents);
-          const messages = Array.isArray(request.agent.messages)
-            ? [...request.agent.messages]
-            : [];
+          const messages = Array.isArray(request.agent.messages) ? [...request.agent.messages] : [];
           if (store.createdAt === 0) store.createdAt = Date.now();
           store.updatedAt = Date.now();
           store.agentId = request.agent.agentId ?? "default";

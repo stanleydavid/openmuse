@@ -27,7 +27,9 @@ async function main() {
       threadId: mt.threadId,
       runId: crypto.randomUUID(),
       state: {},
-      messages: [{ id: crypto.randomUUID(), role: "user", content: "Reply with exactly: PERSIST_OK" }],
+      messages: [
+        { id: crypto.randomUUID(), role: "user", content: "Reply with exactly: PERSIST_OK" },
+      ],
       tools: [],
       context: [],
       forwardedProps: {},
@@ -39,7 +41,9 @@ async function main() {
     });
     const text = await r.text();
     console.log(`run: HTTP ${r.status} bytes=${text.length}`);
-    console.log(/PERSIST_OK/.test(text) ? "ASSISTANT_REPLY_OK" : `NO_MATCH head=${text.slice(0, 400)}`);
+    console.log(
+      /PERSIST_OK/.test(text) ? "ASSISTANT_REPLY_OK" : `NO_MATCH head=${text.slice(0, 400)}`,
+    );
   }
 
   const listRes = await fetch(`${base}/api/copilotkit/threads`, { headers: h });
@@ -53,7 +57,9 @@ async function main() {
   const match = threads.find((t) => t.id === mt.threadId);
   console.log(match ? `THREAD_PRESENT ${mt.threadId}` : `THREAD_MISSING ${mt.threadId}`);
 
-  const msgRes = await fetch(`${base}/api/copilotkit/threads/${mt.threadId}/messages`, { headers: h });
+  const msgRes = await fetch(`${base}/api/copilotkit/threads/${mt.threadId}/messages`, {
+    headers: h,
+  });
   const msgText = await msgRes.text();
   let msgs = [];
   try {

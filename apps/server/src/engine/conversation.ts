@@ -2,7 +2,7 @@ import "../config.ts";
 import { createHash, randomUUID } from "node:crypto";
 import { AbstractAgent } from "@ag-ui/client";
 import { type BaseEvent, EventType, type RunAgentInput } from "@ag-ui/core";
-import { BuiltInAgent, defineTool } from "@copilotkit/runtime/v2";
+import { BuiltInAgent, type BuiltInAgentModel, defineTool } from "@copilotkit/runtime/v2";
 import { Observable } from "rxjs";
 import { z } from "zod";
 import {
@@ -12,6 +12,7 @@ import {
 } from "../../../../packages/domain/src/agent.ts";
 import { computerInstructions, computerTools } from "../computer-tools.ts";
 import type { Config } from "../config.ts";
+import { chatModel } from "../llm.ts";
 import type { AgentService } from "./service.ts";
 
 export class ConversationAgent extends AbstractAgent {
@@ -214,7 +215,7 @@ export class ConversationAgent extends AbstractAgent {
       }),
     ];
     const agent = new BuiltInAgent({
-      model: this.config.model ?? "openai/unconfigured",
+      model: chatModel(this.config.model) as BuiltInAgentModel,
       maxSteps: 6,
       maxRetries: 0,
       tools,
