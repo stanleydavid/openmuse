@@ -11,3 +11,7 @@ apps/mobile/android/
 .DS_Store
 *.tsbuildinfo
 artifacts/
+.env.bak-*
+*.log
+dbg.err
+dbg.out

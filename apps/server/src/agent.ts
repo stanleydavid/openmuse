@@ -1,9 +1,11 @@
 import "./config.ts";
 import { HttpAgent } from "@ag-ui/client";
 import {
+  type AgentRunner,
   type AgentsFactory,
   type CopilotKitIntelligence,
   CopilotRuntime,
+  InMemoryAgentRunner,
   createCopilotHonoHandler,
 } from "@copilotkit/runtime/v2";
 import type { Auth } from "./auth.ts";
@@ -28,7 +30,12 @@ export function makeRuntime(
   config: Config,
   service: AgentService,
   auth: Auth,
-  intelligence: CopilotKitIntelligence,
+  // LOCAL PATCH (2026-09-24): optional. When absent the runtime runs fully
+  // locally on the in-memory runner (threads live in this process only).
+  intelligence?: CopilotKitIntelligence,
+  // LOCAL PATCH (2026-09-24): optional PGlite-backed runner. When supplied, the
+  // local runtime persists conversation threads across API restarts.
+  runner?: AgentRunner,
 ) {
   const agents: AgentsFactory = async ({ request }) => ({
     default:
@@ -49,6 +56,14 @@ export function makeRuntime(
               await auth.owner(request.headers.get("authorization") ?? undefined),
             ),
   });
+  // LOCAL PATCH (2026-09-24): two explicit branches. The hosted Intelligence
+  // runtime wants identifyUser; the local OSS runtime takes a runner instead and
+  // rejects identifyUser. Mixing them in one spread breaks overload resolution.
+  if (!intelligence)
+    return createCopilotHonoHandler({
+      runtime: new CopilotRuntime({ agents, runner: runner ?? new InMemoryAgentRunner() }),
+      basePath: "/api/copilotkit",
+    });
   const runtime = new CopilotRuntime({
     agents,
     intelligence,
